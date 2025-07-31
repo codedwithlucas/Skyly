@@ -9,6 +9,10 @@ priorizando simplicidade e experiência do usuário sem distrações.
 
 ---
 
+<img width="600" height="600" alt="Screenshot_1753980506-right" src="https://github.com/user-attachments/assets/831de412-830e-473b-9afc-1de9e567215f" />
+
+---
+
 ## Funcionalidades
 
 - Detecta automaticamente a cidade atual via GPS
