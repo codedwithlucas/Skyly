@@ -1,16 +1,19 @@
-# skyly
+# Skyly
 
-A new Flutter project.
+Skyly é um app minimalista de previsão do tempo feito em Flutter.  
+Ele mostra automaticamente a cidade atual, a temperatura e o ícone do clima,  
+e alterna entre modo claro e escuro conforme o tema do sistema.  
 
-## Getting Started
+Este projeto é focado no aprendizado de Flutter e boas práticas,  
+priorizando simplicidade e experiência do usuário sem distrações.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## Funcionalidades
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Detecta automaticamente a cidade atual via GPS
+- Exibe a temperatura atual com ícones simples e intuitivos
+- Suporte a tema claro e escuro conforme a configuração do dispositivo
+- Interface minimalista e fácil de usar
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
