@@ -11,7 +11,6 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
-lib/secret.dart
 
 # IntelliJ related
 *.iml
@@ -33,6 +32,7 @@ lib/secret.dart
 .pub-cache/
 .pub/
 /build/
+lib/secret.dart
 
 # Symbolication related
 app.*.symbols

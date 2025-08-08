@@ -1,0 +1,8 @@
+build/** linguist-vendored
+.android/** linguist-vendored
+.ios/** linguist-vendored
+.packages linguist-vendored
+pubspec.lock linguist-vendored
+flutter_export_environment.sh linguist-vendored
+Pods/** linguist-vendored
+.flutter-plugins* linguist-vendored
