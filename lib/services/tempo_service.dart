@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:geocoding/geocoding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:skyly/models/tempo_model.dart';
 import 'package:http/http.dart' as http;
@@ -10,41 +10,68 @@ class TempoService {
 
   TempoService(this.apiK);
 
-  Future<Tempo> getTempo(String cidade) async {
-    // Tenta buscar os dados daa API do OpenWeather
-    final response = await http.get(Uri.parse('$URL?q=$cidade&appid=$apiK&units=metric'));
+  // Fetch pelas coordenadas, talvez mais rrápido?
+  Future<Tempo> getTempoPorPosicao(double lat, double lon) async {
+    final response = await http.get(
+      Uri.parse('$URL?lat=$lat&lon=$lon&appid=$apiK&units=metric'),
+    );
 
-    // Se o servidor OK
     if (response.statusCode == 200) {
-      return Tempo.fromJson(jsonDecode(response.body));
+      final tempo = Tempo.fromJson(jsonDecode(response.body));
+      saveLastTempo(tempo);
+      return tempo;
     } else {
-      // Se deu ruim, joga um erro pra cima para ser tratado onde chamar essa função
       throw Exception('Falhou na procura pela informação!');
     }
   }
 
-  // Função pra pegar o nome da cidade atual do usuário
-  Future<String> getCidadeAtual() async {
-    // Verifica se a gente tem permissão de localização
+  // Deprecated: Fetch antigo
+  Future<Tempo> getTempo(String cidade) async {
+    final response = await http.get(
+      Uri.parse('$URL?q=$cidade&appid=$apiK&units=metric'),
+    );
+
+    if (response.statusCode == 200) {
+      final tempo = Tempo.fromJson(jsonDecode(response.body));
+      saveLastTempo(tempo);
+      return tempo;
+    } else {
+      throw Exception('Falhou na procura pela informação!');
+    }
+  }
+
+  Future<void> saveLastTempo(Tempo tempo) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('last_tempo', jsonEncode(tempo.toJson()));
+  }
+
+  Future<Tempo?> getLastTempo() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? tempoJson = prefs.getString('last_tempo');
+    if (tempoJson != null) {
+      return Tempo.fromJson(jsonDecode(tempoJson));
+    }
+    return null;
+  }
+
+  // Função pra pegar a posição atual (Lat/Lon)
+  Future<Position> getPosicaoAtual() async {
+    // Verifica permissões
     LocationPermission permissao = await Geolocator.checkPermission();
     if (permissao == LocationPermission.denied) {
-      // Se não tiver, pede para o usuário liberar
       permissao = await Geolocator.requestPermission();
     }
 
-    // Pega a posição atual com precisão alta
-    //Se der ruim, tentar baixar pra um medium...
-    Position posicao = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
- 
-    // Converte latitude e longitude para um endereço placemark
-    List<Placemark> marcacao = await placemarkFromCoordinates(posicao.latitude, posicao.longitude);
+    // Tenta ultima conhecida (Instantanea)
+    Position? posicao = await Geolocator.getLastKnownPosition();
 
-    // Pega a cidade do primeiro resultado...
-    String? cidade = marcacao[0].subAdministrativeArea;
+    // Se não tiver, busca a atual (demora um pouco)
+    if (posicao == null) {
+      posicao = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+    }
 
-    // Se não achou, devolve uma string padrão
-    return cidade ?? "Cidade não encontrada";
+    return posicao;
   }
 }
